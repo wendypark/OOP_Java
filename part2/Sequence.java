@@ -3,6 +3,13 @@ class Sequence extends Element {
 	private Element element;
 	private Sequence next;
 
+  public SequenceIterator begin() {
+    return SequenceIterator(this);
+  }
+  public SequenceIterator end() {
+    return SequenceIterator(get_last_sequence());
+  }
+
 	//initialize to empty set 
 	public Sequence(){
 		element = null;
@@ -58,6 +65,10 @@ class Sequence extends Element {
       System.err.println("ERROR: Position " + pos + " does not exist in the sequence."); 
       System.exit(1);
     }
+  }
+
+  private Sequence get_last_sequence() {
+    return get_sequence_at_pos( length() - 1 );
   }
 
   private Sequence get_sequence_at_pos(int pos) {
