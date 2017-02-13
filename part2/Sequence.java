@@ -3,13 +3,6 @@ class Sequence extends Element {
 	private Element element;
 	private Sequence next;
 
-  public SequenceIterator begin() {
-    return SequenceIterator(this);
-  }
-  public SequenceIterator end() {
-    return SequenceIterator(get_last_sequence());
-  }
-
 	//initialize to empty set 
 	public Sequence(){
 		element = null;
@@ -83,7 +76,7 @@ class Sequence extends Element {
 
   public void add(Element elem, int pos){
   	// assert that position is not out of range ( Allow + 1 since we're adding )
-  	assert_pos_is_valid(pos + ((pos == 0) ? 1 : -1));
+  	assert_pos_is_valid(pos + ((pos == 0) ? 0 : -1));
 
     // if position is 0, insert at first position 
     if (pos == 0) {
