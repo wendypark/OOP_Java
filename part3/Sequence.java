@@ -144,22 +144,45 @@ class Sequence extends Element {
   public Element index(int pos) {
     //error flagging 
     assert_pos_is_valid(pos);
-
     Sequence target = get_sequence_at_pos(pos);
-
     return target.element;
 
   }
 
+  //flatten other subsequences into new sequence 
   public Sequence flatten() {
 
+    //new sequence 
+    Sequence flattened = this;
+    Sequence current = this;
+    int i = 0;
+    while (i < current.length() && current != null) {
+      //if element is Sequence
+      if (current.element instanceof Sequence) {
+        int x = 0;
+
+        //convert element object to Sequence object 
+        Sequence inner = (Sequence)current.element;
+        while (x < inner.length() && inner != null) {
+          inner.flatten();
+          flattened.add(inner.element, flattened.length());
+          inner = inner.next;
+          x++;
+        }
+      }
+      //if element is MyInt or MyChar
+      else {
+        flattened.add(current.element, flattened.length());
+      }
+      current = current.next;
+      i++;
+    }
+
+    return flattened;
   }
 
+  //still working
   public Sequence copy() {
+    return
 
   }
-
-
-	
-    
-}

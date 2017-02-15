@@ -114,6 +114,7 @@ class Test3 {
 	sFlat.Print();
 	dbl_line();
 
+	
 	// do deep copy
 	Sequence sCopy = (Sequence)s.copy();
 	// modify s
