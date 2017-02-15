@@ -1,6 +1,7 @@
-class SequenceIterator {
+class SequenceIterator extends Sequence {
 
   private Sequence sequence;
+  private SequenceIterator next;
 
   //initialize to empty set 
   public SequenceIterator(){
@@ -14,14 +15,14 @@ class SequenceIterator {
   }
 
   public Element get() {
-    return sequence.element;
+    return sequence.GetElement();
   }
 
   public SequenceIterator advance() {
-    this.sequence = this.sequence.next;
+    this.sequence = this.sequence.GetNext();
   }
 
-  public bool equal (SequenceIterator other) {
-    return this.sequence == other.sequence
+  public Boolean equal (SequenceIterator other) {
+    return this.sequence == other.sequence;
   }
 }
