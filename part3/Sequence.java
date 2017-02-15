@@ -139,6 +139,27 @@ class Sequence extends Element {
       target.next = target.next.next;
     }
 	}
+
+  //used to access a particular element of a Sequence object
+  public Element index(int pos) {
+    //error flagging 
+    assert_pos_is_valid(pos);
+
+    Sequence target = get_sequence_at_pos(pos);
+
+    return target.element;
+
+  }
+
+  public Sequence flatten() {
+
+  }
+
+  public Sequence copy() {
+
+  }
+
+
 	
     
 }
