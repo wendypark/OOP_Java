@@ -95,10 +95,12 @@ class Sequence extends Element {
     if (target.next == null) {
       // no next sequence
       target.next = new Sequence(elem, null);
-    } else if (target.next.element == null) {
+    } 
+    else if (target.next.element == null) {
       // next sequence.element is null
       target.next.element = elem;
-    } else{
+    } 
+    else{
       // next sequence.element is not null 
       target.next = new Sequence(elem, target.next);
     }
@@ -116,7 +118,8 @@ class Sequence extends Element {
       //   2. Next node exists
       if (this.next == null) {
         this.element = null;
-      } else {
+      } 
+      else {
         this.element = this.next.element;
         this.next = this.next.next;
       }
@@ -131,12 +134,11 @@ class Sequence extends Element {
     //    2. There is a sequence after sequence we're deleting
     if (target.next.next == null) {
       target.next = null;
-    } else {
+    } 
+    else {
       target.next = target.next.next;
     }
 	}
-
-  //hello world 
 	
     
 }
