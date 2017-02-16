@@ -16,7 +16,10 @@ class MyInteger extends Element {
 	}
 	public void Set(int val) {
 		i_data = val; 
+	}
 
+	public MyInteger copy() {
+		return new MyInteger(Get());
 	}
 	
 	public void Print(){
