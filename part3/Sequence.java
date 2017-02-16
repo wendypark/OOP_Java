@@ -170,7 +170,6 @@ class Sequence extends Element {
         //   inner = inner.next;
         //   x++;
         }
-      }
       //if element is MyInt or MyChar
       else {
         flattened.add(current.element, flattened.length());
@@ -193,23 +192,22 @@ class Sequence extends Element {
       //element is character
       if (current.element instanceof MyChar) {
         MyChar c = new MyChar();
-        MyChar c_elem = (MyChar)current.element;
-        copied.add(c.Set(c_elem.Get()), copied.length());
+        //MyChar c_elem = (MyChar)current.element;
+        c.Set(((MyChar)current.element).Get());
+        copied.add(c, copied.length());
 
       }
-
       //element is Sequence
       if (current.element instanceof Sequence) {
         copied.add(((Sequence)(current.element)).copy(), copied.length());
 
       }
-
       //element is integer
       if (current.element instanceof MyInteger) {
-        MyChar i = new MyChar();
-        MyChar i_elem = (MyChar)current.element;
-        copied.add(i.Set(i_elem.Get()), copied.length());
-
+        MyInteger i = new MyInteger();
+        i.Set(((MyInteger)current.element).Get());
+        //MyChar i_elem = (MyChar)current.element;
+        copied.add(i, copied.length());
       }
 
       current = current.next;
