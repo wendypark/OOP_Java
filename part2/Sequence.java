@@ -1,7 +1,7 @@
 class Sequence extends Element {
 
-	private Element element;
-	private Sequence next;
+	Element element;
+	Sequence next;
 
 	//initialize to empty set 
 	public Sequence(){
@@ -15,130 +15,108 @@ class Sequence extends Element {
 		this.next = next;
 	}
 
-	public void Print(){
-        System.out.print("[ ");
+  public Element first() {
+    return element;
+  }
 
-        //constructed new sequence object head 
-        //name for the current instance inside the instance
-        Sequence head = this;
-        while (head != null){
-        	head.element.Print();
-        	System.out.print(" ");
-        	head = head.next;
-        }
-        System.out.print("]");
+  public Sequence rest() {
+    return next;
+  }
+
+  public int length(){
+    int size = 0;
+    Sequence temp = this;
+    while (temp != null) {
+      temp = temp.next;
+      size++;
+    }
+    return size;
+  }
+
+  public void add(Element elem, int pos) {
+
+    // Case: position is root
+    if (pos == 0) {
+      next = new Sequence(element, next);
+      this.element = elem;
+      return;
     }
 
-  //returns first element of sequence
-  public Element first(){
-  	return this.element;
+    // Case: position is not root
+    Sequence sequenceBeforePosition = getSequenceAtIndex(pos - 1);
+    if (sequenceBeforePosition.next == null) {
+      // Add new sequence to end
+      sequenceBeforePosition.next = new Sequence(elem, null);
+    } else if (sequenceBeforePosition.next.element == null) {
+      // Replace null value at sequence
+      sequenceBeforePosition.next.element = elem;
+    } else {
+      // Shift over sequence at pos and insert new sequence
+      sequenceBeforePosition.next = new Sequence(elem, sequenceBeforePosition.next);
+    }
 
   }
 
-  //returns rest of the elements of sequence
-  public Sequence rest(){
-  	return this.next;
+  public void delete(int pos) {
+    if (pos_is_valid(pos)) {
+      // Case: position is root
+      if (pos == 0) {
+        this.element = next.element;
+        this.next = next.next;
+        return;
+      }
 
+      // Case: position is not root
+      Sequence sequenceBeforePosition = getSequenceAtIndex(pos - 1);
+      sequenceBeforePosition.next = sequenceBeforePosition.next.next;
+
+    }
   }
 
-  //return number of of elements in sequence object
-  public int length(){
-  	int size = 0;
-  	Sequence temp = this;
-  	while (temp != null) {
-  		temp = temp.next; //moving pointer
-  		size++;
-  	}
-  
-  	return size;
+  public void Print(){
+      System.out.print("[ ");
+      Sequence temp = this;
+      while (temp != null){
+        if (temp.element != null) {
+          temp.element.Print();
+        } else {
+          System.out.print("'null'");
+        }
+        System.out.print(' ');
+        temp = temp.next;
+      }
+      System.out.print("]");
+  }
+
+  //
+  // Additional Functions
+  //
+
+  private boolean pos_is_valid(int pos) {
+    return ( pos < length() && pos >= 0 );
   }
 
   private void assert_pos_is_valid(int pos){
-    if (length() < pos || pos < 0) {  
+    if ( !pos_is_valid( pos ) ) {  
       System.err.println("ERROR: Position " + pos + " does not exist in the sequence."); 
       System.exit(1);
     }
   }
 
-  private Sequence get_last_sequence() {
-    return get_sequence_at_pos( length() - 1 );
+  public Element getElementAtIndex(int pos) {
+    return getSequenceAtIndex(pos).element;
   }
 
-  private Sequence get_sequence_at_pos(int pos) {
-    Sequence target = this;
+  public Sequence getSequenceAtIndex(int pos) {
+    assert_pos_is_valid(pos);
+    Sequence temp = this;
     int i = 0;
     while ( i < pos ) {
-      target = target.next;
+      temp = temp.next;
       i++;
     }
-    return target;
+    return temp;
   }
 
-  public void add(Element elem, int pos){
-  	// assert that position is not out of range ( Allow + 1 since we're adding )
-  	assert_pos_is_valid(pos + ((pos == 0) ? 0 : -1));
 
-    // if position is 0, insert at first position 
-    if (pos == 0) {
-      this.next = new Sequence(this.element, this.next);
-      this.element = elem;
-      return;
-    }
-
-    // iterate to before position in sequence
-    Sequence target = get_sequence_at_pos(pos - 1);
-
-    // 3 cases:
-    //    1. No next sequence
-    //    2. Next sequence's element is null (Should this even be allowed behavior?)
-    //    3. Next sequence has an element
-    if (target.next == null) {
-      // no next sequence
-      target.next = new Sequence(elem, null);
-    } 
-    else if (target.next.element == null) {
-      // next sequence.element is null
-      target.next.element = elem;
-    } 
-    else{
-      // next sequence.element is not null 
-      target.next = new Sequence(elem, target.next);
-    }
-	}
-
-  // NOTE: 
-  public void delete(int pos){
-    // assert that position is not out of range
-    assert_pos_is_valid(pos);
-
-    // if position is 0, delete at first position
-    if (pos == 0) {
-      // 2 cases:
-      //   1. No next node
-      //   2. Next node exists
-      if (this.next == null) {
-        this.element = null;
-      } 
-      else {
-        this.element = this.next.element;
-        this.next = this.next.next;
-      }
-      return;
-    }
-
-    // iterate to before position in sequence
-    Sequence target = get_sequence_at_pos(pos - 1);
-
-    // 2 cases:
-    //    1. No sequence after sequence we're deleting
-    //    2. There is a sequence after sequence we're deleting
-    if (target.next.next == null) {
-      target.next = null;
-    } 
-    else {
-      target.next = target.next.next;
-    }
-	}
-	
-    
 }
