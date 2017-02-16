@@ -18,7 +18,7 @@ class MyInteger extends Element {
 		i_data = val; 
 
 	}
-
+	
 	public void Print(){
 		System.out.print(i_data);
 	}

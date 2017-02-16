@@ -3,11 +3,25 @@ class Sequence extends Element {
 	private Element element;
 	private Sequence next;
 
-	//initialize to empty set 
-	public Sequence(){
-		element = null;
-		next = null; 
-	}
+  // public Sequence() {
+  //   SequenceNode head = this.element;
+  //   SequenceNode tail = this.next;
+  // }
+
+  /*Class SequenceNode() {
+    element e;
+    SN next;
+  }
+  public Sequence() {
+    SN head;
+    SN tail;
+
+  }*/
+
+  public Sequence() {
+    element = null;
+    next = null;
+  }
 
 	//Get() and Set()
 	public Sequence(Element element, Sequence next) {
@@ -63,46 +77,47 @@ class Sequence extends Element {
     return get_sequence_at_pos( length() - 1 );
   }
 
-  private Sequence get_sequence_at_pos(int pos) {
+  //create pointer exception error
+  public Sequence get_sequence_at_pos(int pos) {
     Sequence target = this;
     int i = 0;
     while ( i < pos ) {
       target = target.next;
       i++;
     }
-    return target;
+    return target;   
   }
 
   public void add(Element elem, int pos){
   	// assert that position is not out of range ( Allow + 1 since we're adding )
   	assert_pos_is_valid(pos + ((pos == 0) ? 0 : -1));
+    
+    Sequence current = this; 
+    Sequence head = null; //will store sequence before pos
 
-    // if position is 0, insert at first position 
-    if (pos == 0) {
-      this.next = new Sequence(this.element, this.next);
-      this.element = elem;
-      return;
+    //references index pos of current sequence
+    int i = 0;
+    while ( i < pos && current != null) {
+      head = current;
+      current = current.next;
+      i++;
     }
 
-    // iterate to before position in sequence
-    Sequence target = get_sequence_at_pos(pos - 1);
-
-    // 3 cases:
-    //    1. No next sequence
-    //    2. Next sequence's element is null (Should this even be allowed behavior?)
-    //    3. Next sequence has an element
-    if (target.next == null) {
-      // no next sequence
-      target.next = new Sequence(elem, null);
-    } 
-    else if (target.next.element == null) {
-      // next sequence.element is null
-      target.next.element = elem;
-    } 
-    else{
-      // next sequence.element is not null 
-      target.next = new Sequence(elem, target.next);
+    //Cases:
+    //    1) sequence before pos is empty and pos is not empty
+    //    2) sequence before pos is empty and pos is empty
+    //    3) sequence before pos is not empty 
+    if (head == null && current.element != null) {
+        current.next = new Sequence(current.element, current.next);
+        current.element = elem;
     }
+    else if (head == null && current.element == null) { 
+      current.element = elem;
+    }
+    else {
+      head.next = new Sequence(elem, current);
+    }
+    
 	}
 
   // NOTE: 
@@ -113,8 +128,8 @@ class Sequence extends Element {
     // if position is 0, delete at first position
     if (pos == 0) {
       // 2 cases:
-      //   1. No next node
-      //   2. Next node exists
+      //     1. No next node
+      //     2. Next node exists
       if (this.next == null) {
         this.element = null;
       } 
@@ -154,21 +169,25 @@ class Sequence extends Element {
   public Sequence flatten() {
 
     //new sequence 
-    Sequence flattened = this;
-    Sequence current = this;
+    Sequence flattened = null; //flatsequence
+    Sequence current = this; //currentnode
     int pos = 0;
     while (pos < current.length() && current != null) {
-
       //if element is Sequence
       if (current.element instanceof Sequence) {
-        int x = 0;
+        Sequence subSequence = new Sequence();
+        subSequence = ((Sequence)current.first()).flatten();
+        for(;subSequence!=null;subSequence=subSequence.next)
+          flattened.add(subSequence.first(), flattened.length());
+
+        /*int x = 0;
         //convert element object to Sequence object 
-        Sequence inner = (Sequence)current.element;
         inner.flatten();
-        // while (x < inner.length() && inner != null) {
-        //   flattened.add(inner.element, flattened.length());
-        //   inner = inner.next;
-        //   x++;
+        Sequence inner = (Sequence)current.element;
+        while (x < inner.length() && inner != null) {
+          flattened.add(inner.element, flattened.length());
+          inner = inner.next;
+          x++;*/
         }
       //if element is MyInt or MyChar
       else {
