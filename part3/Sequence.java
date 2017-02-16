@@ -17,13 +17,12 @@ class Sequence extends Element {
 
 	public void Print(){
         System.out.print("[ ");
-
         //constructed new sequence object head 
         //name for the current instance inside the instance
         Sequence head = this;
         while (head != null){
         	head.element.Print();
-        	System.out.print(" ");
+        	System.out.print(' ');
         	head = head.next;
         }
         System.out.print("]");
@@ -144,7 +143,9 @@ class Sequence extends Element {
   public Element index(int pos) {
     //error flagging 
     assert_pos_is_valid(pos);
+    //gets sequence at given position
     Sequence target = get_sequence_at_pos(pos);
+    //returns element of sequence 
     return target.element;
 
   }
@@ -155,19 +156,19 @@ class Sequence extends Element {
     //new sequence 
     Sequence flattened = this;
     Sequence current = this;
-    int i = 0;
-    while (i < current.length() && current != null) {
+    int pos = 0;
+    while (pos < current.length() && current != null) {
+
       //if element is Sequence
       if (current.element instanceof Sequence) {
         int x = 0;
-
         //convert element object to Sequence object 
         Sequence inner = (Sequence)current.element;
-        while (x < inner.length() && inner != null) {
-          inner.flatten();
-          flattened.add(inner.element, flattened.length());
-          inner = inner.next;
-          x++;
+        inner.flatten();
+        // while (x < inner.length() && inner != null) {
+        //   flattened.add(inner.element, flattened.length());
+        //   inner = inner.next;
+        //   x++;
         }
       }
       //if element is MyInt or MyChar
@@ -175,14 +176,49 @@ class Sequence extends Element {
         flattened.add(current.element, flattened.length());
       }
       current = current.next;
-      i++;
+      pos++;
     }
 
     return flattened;
   }
 
-  //still working
+  //deep copy of a sequence object
   public Sequence copy() {
-    return
+
+    Sequence copied = this;
+    Sequence current = this;
+    int pos = 0;
+    while (pos < current.length() && current != null) {
+
+      //element is character
+      if (current.element instanceof MyChar) {
+        MyChar c = new MyChar();
+        MyChar c_elem = (MyChar)current.element;
+        copied.add(c.Set(c_elem.Get()), copied.length());
+
+      }
+
+      //element is Sequence
+      if (current.element instanceof Sequence) {
+        copied.add(((Sequence)(current.element)).copy(), copied.length());
+
+      }
+
+      //element is integer
+      if (current.element instanceof MyInteger) {
+        MyChar i = new MyChar();
+        MyChar i_elem = (MyChar)current.element;
+        copied.add(i.Set(i_elem.Get()), copied.length());
+
+      }
+
+      current = current.next;
+      pos++;
+    }
+
+    return copied;
 
   }
+
+
+}

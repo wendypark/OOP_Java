@@ -16,10 +16,10 @@ class Sequence extends Element {
   }
 
   public SequenceIterator begin() {
-    return SequenceIterator(this);
+    return new SequenceIterator(this);
   }
   public SequenceIterator end() {
-    return SequenceIterator(get_last_sequence());
+    return new SequenceIterator(get_last_sequence());
   }
 
   public Sequence GetNext() {
