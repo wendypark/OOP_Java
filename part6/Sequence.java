@@ -53,7 +53,8 @@ class Sequence extends Element {
     //constructed new sequence object head 
     //name for the current instance inside the instance
     Sequence head = this;
-    while (head != null){
+    while (head != null && head.element != null){
+      // System.out.println(head.element == null ? "null" : "notnull"); 
       head.element.Print();
       System.out.print(" ");
       head = head.next;
@@ -96,7 +97,7 @@ class Sequence extends Element {
     return get_sequence_at_pos( length() - 1 );
   }
 
-  private Sequence get_sequence_at_pos(int pos) {
+  public Sequence get_sequence_at_pos(int pos) {
     Sequence target = this;
     int i = 0;
     while ( i < pos ) {
