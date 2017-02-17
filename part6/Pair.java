@@ -1,10 +1,11 @@
 class Pair extends Element {
+
   MyChar key;
   Element value;
 
   //constructor
   public Pair() {
-    key = new MyChar();
+    key = null;
     value = null;
   }
 
@@ -30,9 +31,6 @@ class Pair extends Element {
   }
 
   public boolean lessThan(Pair pair) {
-    System.out.println("this " + this.key == null ? "null" : "notnull"); 
-    System.out.println("pair " + pair.key == null ? "null" : "notnull"); 
-
     return this.key.Get() < pair.key.Get();
   }
 

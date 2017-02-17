@@ -1,69 +1,141 @@
-class Map extends Element {
+class Map extends Pair {
 
-  // Only store pairs in sequences
-  private Sequence sequence;
+  Pair pair;
+  Map next;
 
   //initialize to empty set 
   public Map(){
-    sequence = new Sequence(null, null);
+    pair = null;
+    next = null; 
   }
 
-  //Get() and Set()
-  public Map(Pair pair) {
-    this.sequence = new Sequence(pair, null);
+  public Map(Pair pair, Map next){
+    this.pair = pair;
+    this.next = next; 
   }
 
-  public Pair get_pair(){
-    return (Pair)sequence.get_element();
-  }
-  public Element get_value(){
-    Pair pair = (Pair)sequence.get_element();
-    return pair.Get();
-  }
-  public MyChar get_key(){
-    Pair pair = (Pair)sequence.get_element();
-    return pair.GetKey();
+  public Pair first() {
+    return pair;
   }
 
-  public MapIterator find(MyChar key){
-    int i;
-    for (i = 0; i < sequence.length(); i++) {
-      Pair pair = (Pair)(sequence.get_sequence_at_pos(i).get_element());
-      if ( key == pair.GetKey() ) {
-        return new MapIterator( new Map(pair) );
+  public Map rest() {
+    return next;
+  }
+
+  public int length(){
+    int size = 0;
+    Map temp = this;
+    while (temp != null) {
+      temp = temp.next;
+      size++;
+    }
+    return size;
+  }
+
+  // Will not be using this function within implementation to avoid confusion between get pair and get sequence
+  public Pair index(int pos) {
+    return getPairAtIndex(pos);
+  }
+
+  public MapIterator find(MyChar key) {
+    Map matchingMap = null;
+    for (int i = 0; i < length(); i++) {
+      Map tempMap = getMapAtIndex(i);
+      if (tempMap.pair.key.Get() == key.Get()) {
+        matchingMap = tempMap;
+        break;
       }
     }
-    return end();
+    if (matchingMap == null) {
+      return end();
+    }
+
+    return new MapIterator(matchingMap);
   }
 
-  public Map get_next(){
-    return new Map((Pair)sequence.get_next().get_element());
+  public void add(Pair pair) {
+    if (this.pair == null) {
+      this.pair = pair;
+      return;
+    }
+
+    int i = 0;
+    for (; i < length(); i++) {
+      Pair tempPair = getPairAtIndex(i);
+      if (tempPair == null) {
+        System.err.println("ERROR: Position " + i + " is null? This shouldn't happen..."); 
+        System.exit(1);
+      }
+      if (pair.lessThan(tempPair)) {
+        break;
+      }
+    }
+
+    if (i == 0) {
+      this.next = new Map(this.pair, this.next);
+      this.pair = pair;
+    } else {
+      Map mapBeforeTarget = getMapAtIndex(i - 1);
+      mapBeforeTarget.next = new Map(pair, mapBeforeTarget.next);
+    }
   }
 
   public void Print(){
-    this.sequence.Print();
+      System.out.print("[ ");
+      Map temp = this;
+      while (temp != null){
+        if (temp.pair != null) {
+          temp.pair.Print();
+        } else {
+          System.out.print("'null'");
+        }
+        System.out.print(' ');
+        temp = temp.next;
+      }
+      System.out.print("]");
   }
 
-  public void add(Pair inval) {
-    int i = 0;
-    if (sequence.length() > 0 && sequence.get_element() != null) {
-      for (i = 0; i < sequence.length(); i++) {
-        if ( inval.lessThan((Pair)sequence.get_sequence_at_pos(i).get_element()) ) {
-          break;
-        }
-      }
-    }
-    sequence.add(inval, i);
-  }
+  //
+  // Part 4: Iterator Functions
+  //
 
   public MapIterator begin() {
     return new MapIterator(this);
   }
 
   public MapIterator end() {
-    Pair pair = new Pair(new MyChar('e'), new End());
-    Map map = new Map(pair);
-    return new MapIterator(map);
+    return MapIterator.end();
+  }
+
+
+  //
+  // Additional Functions
+  //
+
+  private boolean pos_is_valid(int pos) {
+    return ( pos < length() && pos >= 0 );
+  }
+
+  private void assert_pos_is_valid(int pos){
+    if ( !pos_is_valid( pos ) ) {  
+      System.err.println("ERROR: Position " + pos + " does not exist in the sequence."); 
+      System.exit(1);
+    }
+  }
+
+  public Pair getPairAtIndex(int pos) {
+    return getMapAtIndex(pos).pair;
+  }
+
+  public Map getMapAtIndex(int pos) {
+    assert_pos_is_valid(pos);
+    Map temp = this;
+    int i = 0;
+    while ( i < pos ) {
+      temp = temp.next;
+      i++;
+    }
+    return temp;
   }
 
 }

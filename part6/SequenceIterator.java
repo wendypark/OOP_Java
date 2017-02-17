@@ -1,10 +1,12 @@
-public class SequenceIterator extends Sequence {
-  private Sequence sequence;
-  private SequenceIterator next;
+public class SequenceIterator {
+
+  Sequence sequence;
+  private Boolean isEnd = false;
+
+
   //initialize to empty set 
   public SequenceIterator(){
     sequence = null;
-    next = null; 
   }
 
   //Get() and Set()
@@ -12,23 +14,40 @@ public class SequenceIterator extends Sequence {
     this.sequence = sequence;
   }
 
-  public Element get() {
-    return sequence.get_element();
-  }
-
   public void advance() {
-    Sequence next = this.sequence.get_next();
+    Sequence next = this.sequence.next;
     if (next == null) {
-      this.sequence = new Sequence(new End(), null);
+      this.sequence = createEndSequence();
+      this.isEnd = true;
     } else {
       this.sequence = next;
     }
   }
 
-  public Boolean equal (SequenceIterator other) {
-    if ((this.get() instanceof End) && (other.get() instanceof End)){
+  public Boolean equal(SequenceIterator other) {
+    if (this.isEnd && other.isEnd) {
       return true;
     }
+
+    // I THINK this works...
     return this.get() == other.get();
+  }
+
+  public Element get() {
+    return sequence.element;
+  }
+
+  public void set(Element elem) {
+    sequence.element = elem;
+  }
+
+  private static Sequence createEndSequence() {
+    return new Sequence(new MyChar('E'), null);
+  }
+
+  public static SequenceIterator end() {
+    SequenceIterator end = new SequenceIterator(createEndSequence());
+    end.isEnd = true;
+    return end;
   }
 } 
