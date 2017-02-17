@@ -1,7 +1,7 @@
 class Sequence extends Element {
 
-  private Element element;
-  private Sequence next;
+  Element element;
+  Sequence next;
 
   //initialize to empty set 
   public Sequence(){
@@ -15,156 +15,168 @@ class Sequence extends Element {
     this.next = next;
   }
 
+  public Element first() {
+    return element;
+  }
+
+  public Sequence rest() {
+    return next;
+  }
+
+  public int length(){
+    int size = 0;
+    Sequence temp = this;
+    while (temp != null) {
+      temp = temp.next;
+      size++;
+    }
+    return size;
+  }
+
+  // Will not be using this function within implementation to avoid confusion between get element and get sequence
+  public Element index(int pos) {
+    return getElementAtIndex(pos);
+  }
+
+  public void add(Element elem, int pos) {
+    // Case: position is root
+    if (pos == 0) {
+      if (element == null) {
+        // Replace null value at sequence
+        element = elem;
+      } else {
+        // Create new sequence at root
+        next = new Sequence(element, next);
+        this.element = elem;
+      }
+      return;
+    }
+
+    // Case: position is not root
+    Sequence sequenceBeforePosition = getSequenceAtIndex(pos - 1);
+    if (sequenceBeforePosition.next == null || sequenceBeforePosition.next.element != null) {
+      // Shift over sequence at pos and insert new sequence, or just create new sequence at end
+      sequenceBeforePosition.next = new Sequence(elem, sequenceBeforePosition.next);
+    } else {
+      // Replace null value at sequence
+      sequenceBeforePosition.next.element = elem;
+    }
+  }
+
+  public void delete(int pos) {
+    if (pos_is_valid(pos)) {
+      // Case: position is root
+      if (pos == 0) {
+        this.element = next.element;
+        this.next = next.next;
+        return;
+      }
+
+      // Case: position is not root
+      Sequence sequenceBeforePosition = getSequenceAtIndex(pos - 1);
+      sequenceBeforePosition.next = sequenceBeforePosition.next.next;
+
+    }
+  }
+
+  public void Print(){
+      System.out.print("[ ");
+      Sequence temp = this;
+      while (temp != null){
+        if (temp.element != null) {
+          temp.element.Print();
+        } else {
+          System.out.print("'null'");
+        }
+        System.out.print(' ');
+        temp = temp.next;
+      }
+      System.out.print("]");
+  }
+
+  public Sequence flatten() {
+    // emptyRoot has no element. The actual flattenned sequence to be outputted will be at emptyRoot.next
+    // I did this to simplify the base step in the while loop
+    Sequence emptyRoot = new Sequence();
+    Sequence flattenedTail = emptyRoot;
+    Sequence sequence = this;
+    while (sequence != null){
+      // If current element is not a Sequence
+      if (sequence.element == null || !(sequence.element instanceof Sequence) ) {
+        flattenedTail.next = new Sequence(sequence.element, sequence.next);
+        flattenedTail = flattenedTail.next;
+      // If current element is a Sequence
+      } else {
+        // Flatten subsequence, append to output sequence, and move sequence to the end of output sequence
+        flattenedTail.next = ((Sequence)sequence.element).flatten();
+        flattenedTail = flattenedTail.getSequenceAtIndex(flattenedTail.length() - 1);
+      }
+      sequence = sequence.next;
+    }
+    return emptyRoot.next;
+  }
+
+  public Sequence copy() {
+
+    Element elementCopy = null;
+    Sequence nextSequenceCopy = null;
+    if (element instanceof Sequence) {
+      elementCopy = ((Sequence)element).copy();
+    } else if (element instanceof MyChar) {
+      elementCopy = ((MyChar)element).copy();
+    } else if (element instanceof MyInteger) {
+      elementCopy = ((MyInteger)element).copy();
+    }
+
+    if (next != null) {
+      nextSequenceCopy = next.copy();
+    }
+
+    return new Sequence(elementCopy, nextSequenceCopy);
+  }
+
+
+  //
+  // Part 4: Iterator Functions
+  //
+
   public SequenceIterator begin() {
     return new SequenceIterator(this);
   }
 
   public SequenceIterator end() {
-    Sequence sequence = new Sequence(new End(), null);
-    return new SequenceIterator(sequence);
+    return SequenceIterator.end();
   }
 
 
+  //
+  // Additional Functions
+  //
 
-
-  public Element get_element() {
-    return element;
-  }
-
-  public Sequence get_next() {
-    return next;
-  }
-
-  public Element index(int pos) {
-    return get_sequence_at_pos(pos);
-  }
-
-  public Sequence flatten() {
-    return this;
-  }
-
-  public Sequence copy() {
-    return this;
-  }
-
-  public void Print(){
-    System.out.print("[ ");
-
-    //constructed new sequence object head 
-    //name for the current instance inside the instance
-    Sequence head = this;
-    while (head != null){
-      head.element.Print();
-      System.out.print(" ");
-      head = head.next;
-    }
-    System.out.print("]");
-  }
-
-  //returns first element of sequence
-  public Element first(){
-    return this.element;
-
-  }
-
-  //returns rest of the elements of sequence
-  public Sequence rest(){
-    return this.next;
-
-  }
-
-  //return number of of elements in sequence object
-  public int length(){
-    int size = 0;
-    Sequence temp = this;
-    while (temp != null) {
-      temp = temp.next; //moving pointer
-      size++;
-    }
-  
-    return size;
+  private boolean pos_is_valid(int pos) {
+    return ( pos < length() && pos >= 0 );
   }
 
   private void assert_pos_is_valid(int pos){
-    if (length() < pos || pos < 0) {  
+    if ( !pos_is_valid( pos ) ) {  
       System.err.println("ERROR: Position " + pos + " does not exist in the sequence."); 
       System.exit(1);
     }
   }
 
-  private Sequence get_last_sequence() {
-    return get_sequence_at_pos( length() - 1 );
+  public Element getElementAtIndex(int pos) {
+    return getSequenceAtIndex(pos).element;
   }
 
-  private Sequence get_sequence_at_pos(int pos) {
-    Sequence target = this;
+  public Sequence getSequenceAtIndex(int pos) {
+    assert_pos_is_valid(pos);
+    Sequence temp = this;
     int i = 0;
     while ( i < pos ) {
-      target = target.next;
+      temp = temp.next;
       i++;
     }
-    return target;
+    return temp;
   }
 
-  public void add(Element elem, int pos){
-    // assert that position is not out of range ( Allow + 1 since we're adding )
-    assert_pos_is_valid(pos + ((pos == 0) ? 0 : -1));
-
-    // if position is 0, insert at first position 
-    if (pos == 0) {
-      this.next = new Sequence(this.element, this.next);
-      this.element = elem;
-      return;
-    }
-
-    // iterate to before position in sequence
-    Sequence target = get_sequence_at_pos(pos - 1);
-
-    // 3 cases:
-    //    1. No next sequence
-    //    2. Next sequence's element is null (Should this even be allowed behavior?)
-    //    3. Next sequence has an element
-    if (target.next == null) {
-      // no next sequence
-      target.next = new Sequence(elem, null);
-    } else if (target.next.element == null) {
-      // next sequence.element is null
-      target.next.element = elem;
-    } else{
-      // next sequence.element is not null 
-      target.next = new Sequence(elem, target.next);
-    }
-  }
-
-  // NOTE: 
-  public void delete(int pos){
-    // assert that position is not out of range
-    assert_pos_is_valid(pos);
-
-    // if position is 0, delete at first position
-    if (pos == 0) {
-      // 2 cases:
-      //   1. No next node
-      //   2. Next node exists
-      if (this.next == null) {
-        this.element = null;
-      } else {
-        this.element = this.next.element;
-        this.next = this.next.next;
-      }
-      return;
-    }
-
-    // iterate to before position in sequence
-    Sequence target = get_sequence_at_pos(pos - 1);
-
-    // 2 cases:
-    //    1. No sequence after sequence we're deleting
-    //    2. There is a sequence after sequence we're deleting
-    if (target.next.next == null) {
-      target.next = null;
-    } else {
-      target.next = target.next.next;
-    }
-  }
 }

@@ -19,6 +19,10 @@ class MyChar extends Element {
 		c_data = val;
 	}
 
+	public MyChar copy() {
+		return new MyChar(Get());
+	}
+
 	public void Print() {
 		System.out.print("'" + c_data + "'");
 	}
