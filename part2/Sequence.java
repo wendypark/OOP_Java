@@ -1,19 +1,19 @@
 class Sequence extends Element {
 
-	Element element;
-	Sequence next;
+  Element element;
+  Sequence next;
 
-	//initialize to empty set 
-	public Sequence(){
-		element = null;
-		next = null; 
-	}
+  //initialize to empty set 
+  public Sequence(){
+    element = null;
+    next = null; 
+  }
 
-	//Get() and Set()
-	public Sequence(Element element, Sequence next) {
-		this.element = element;
-		this.next = next;
-	}
+  //Get() and Set()
+  public Sequence(Element element, Sequence next) {
+    this.element = element;
+    this.next = next;
+  }
 
   public Element first() {
     return element;
@@ -33,28 +33,34 @@ class Sequence extends Element {
     return size;
   }
 
-  public void add(Element elem, int pos) {
+  // Will not be using this function within implementation to avoid confusion between get element and get sequence
+  public Element index(int pos) {
+    return getElementAtIndex(pos);
+  }
 
+  public void add(Element elem, int pos) {
     // Case: position is root
     if (pos == 0) {
-      next = new Sequence(element, next);
-      this.element = elem;
+      if (element == null) {
+        // Replace null value at sequence
+        element = elem;
+      } else {
+        // Create new sequence at root
+        next = new Sequence(element, next);
+        this.element = elem;
+      }
       return;
     }
 
     // Case: position is not root
     Sequence sequenceBeforePosition = getSequenceAtIndex(pos - 1);
-    if (sequenceBeforePosition.next == null) {
-      // Add new sequence to end
-      sequenceBeforePosition.next = new Sequence(elem, null);
-    } else if (sequenceBeforePosition.next.element == null) {
+    if (sequenceBeforePosition.next == null || sequenceBeforePosition.next.element != null) {
+      // Shift over sequence at pos and insert new sequence, or just create new sequence at end
+      sequenceBeforePosition.next = new Sequence(elem, sequenceBeforePosition.next);
+    } else {
       // Replace null value at sequence
       sequenceBeforePosition.next.element = elem;
-    } else {
-      // Shift over sequence at pos and insert new sequence
-      sequenceBeforePosition.next = new Sequence(elem, sequenceBeforePosition.next);
     }
-
   }
 
   public void delete(int pos) {
@@ -88,6 +94,32 @@ class Sequence extends Element {
       System.out.print("]");
   }
 
+  public Sequence flatten() {
+    // emptyRoot has no element. The actual flattenned sequence to be outputted will be at emptyRoot.next
+    // I did this to simplify the base step in the while loop
+    Sequence emptyRoot = new Sequence();
+    Sequence flattenedTail = emptyRoot;
+    Sequence temp = this;
+    while (temp != null){
+      // If current element is not a Sequence
+      if (temp.element == null || !(temp.element instanceof Sequence) ) {
+        flattenedTail.next = new Sequence(temp.element, temp.next);
+      // If current element is a Sequence
+      } else {
+        // Flatten subsequence, append to output sequence, and move temp to the end of output sequence
+        flattenedTail.next = temp.flatten();
+        temp = flattenedTail.getSequenceAtIndex(flattenedTail.length() - 1);
+      }
+      temp = temp.next;
+    }
+    return emptyRoot.next;
+
+  }
+
+  public Sequence copy() {
+    return new Sequence();
+  }
+
   //
   // Additional Functions
   //
@@ -117,6 +149,4 @@ class Sequence extends Element {
     }
     return temp;
   }
-
-
 }

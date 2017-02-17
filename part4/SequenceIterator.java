@@ -17,7 +17,7 @@ public class SequenceIterator {
   public void advance() {
     Sequence next = this.sequence.next;
     if (next == null) {
-      this.sequence = new Sequence(new MyChar('E'), null);
+      this.sequence = createEndSequence();
       this.isEnd = true;
     } else {
       this.sequence = next;
@@ -29,19 +29,24 @@ public class SequenceIterator {
       return true;
     }
 
-    // For now, the equal only checks if both are isEnd.
-    return (this.isEnd == other.isEnd);
-
-    // This doesn't work yet for some reason... not sure why.
-    // return this.get() == other.get();
+    // I THINK this works...
+    return this.get() == other.get();
   }
 
   public Element get() {
     return sequence.element;
   }
 
+  public void set(Element elem) {
+    sequence.element = elem;
+  }
+
+  private static Sequence createEndSequence() {
+    return new Sequence(new MyChar('E'), null);
+  }
+
   public static SequenceIterator end() {
-    SequenceIterator end = new SequenceIterator();
+    SequenceIterator end = new SequenceIterator(createEndSequence());
     end.isEnd = true;
     return end;
   }
